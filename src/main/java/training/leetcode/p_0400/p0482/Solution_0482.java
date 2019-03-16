@@ -16,21 +16,28 @@ package training.leetcode.p_0400.p0482;
  */
 public class Solution_0482 {
     public String licenseKeyFormatting(String S, int K) {
-        String s = S.replaceAll("-", "");
+        String s = S.replaceAll("-", "").toUpperCase();
 
         int len = s.length();
 
-        int firstSegment = len % K;
+        if (len == 0) return "";
 
-        StringBuilder sb = new StringBuilder(s.substring(0, firstSegment));
+        int chunk = len % K;
+        if (chunk == 0) chunk = K;
 
-        len -= firstSegment;
+        StringBuilder sb = new StringBuilder(s.substring(0, chunk));
+
+        len -= chunk;
+
+        int start = chunk;
 
         while (len > 0) {
             sb.append('-');
-            sb.append(s.substring(0, 0));
+            sb.append(s, start, start+K);
             len -= K;
+            start += K;
         }
-        return "";
+
+        return sb.toString();
     }
 }
