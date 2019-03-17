@@ -9,7 +9,5 @@ public class Solution_0002Test {
         Solution_0002.ListNode b = Solution_0002.ListNode.of(465);
 
         Solution_0002.ListNode result = new Solution_0002().addTwoNumbers(a, b);
-
-        System.out.println("result = " + result);
     }
 }

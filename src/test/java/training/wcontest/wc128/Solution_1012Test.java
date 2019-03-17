@@ -47,7 +47,7 @@ public class Solution_1012Test {
     public void ensure_it_works_when_input_is_999999999() {
         int result = s.bitwiseComplement(999999999);
 
-        assertEquals(5, result);
+        assertEquals(73741824, result);
     }
 
 }

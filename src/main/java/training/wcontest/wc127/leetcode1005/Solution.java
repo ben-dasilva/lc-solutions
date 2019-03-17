@@ -16,12 +16,9 @@ public class Solution {
                 .flatMap(key -> collect.get(key).stream())
                 .limit(K).collect(Collectors.toList());
 
-        System.out.println("negatives = " + negatives);
         negatives.forEach(n -> A[n] = -A[n]);
 
         K -= negatives.size();
-
-        System.out.println("Intermediate A = " + Arrays.toString(A));
 
         // then flip the smallest positive
         K = K % 2;
@@ -35,9 +32,6 @@ public class Solution {
                 .filter(e -> e >= 0).flatMap(key -> collect2.get(key).stream()).limit(K).collect(Collectors.toList());
 
         positives.forEach(n -> A[n] = -A[n]);
-
-        System.out.println("aSet = " + aSet);
-        System.out.println("A = " + Arrays.toString(A));
 
         return Arrays.stream(A).sum();
     }
@@ -59,7 +53,6 @@ public class Solution {
         Map<Integer, List<Integer>> collect = temp.stream().collect(Collectors.groupingBy(elem -> elem[1],
                 Collectors.mapping(ele -> ele[0], Collectors.toList())));
 
-        System.out.println("collect = " + collect);
         return collect;
     }
 }

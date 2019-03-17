@@ -9,7 +9,5 @@ public class Solution_1006Test {
 
 
         int clumsy = solution.clumsy(10);
-
-        System.out.println("clumsy = " + clumsy);
     }
 }

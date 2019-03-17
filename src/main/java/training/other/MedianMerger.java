@@ -22,10 +22,6 @@ public class MedianMerger {
     }
 
     public double findMedianSortedArrays(int level, int start1, int end1, int[] nums1, int start2, int end2, int[] nums2) {
-        System.out.format("%s >> nums1: %s\n", "              ".substring(0, level*2), Arrays.toString(nums1));
-        System.out.format("%s >> nums2: %s\n", "              ".substring(0, level*2), Arrays.toString(nums2));
-        System.out.println("--------------------");
-
         if (level > 4) {
             System.out.println("ERROR -- infinite recursion");
             return -1;
@@ -80,7 +76,6 @@ public class MedianMerger {
             int leftBound  = isEven ? llen / 2 - 2 : llen / 2 - 1;
             int rightBound = isEven ? llen / 2 + 2 : llen / 2 + 2;
 
-            System.out.println("[" + leftBound + ", " + rightBound + ")");
             return simpleMedian(merge(shorterList, Arrays.copyOfRange(longerList, Math.max(0, leftBound), Math.min(llen, rightBound))));
         }
 
