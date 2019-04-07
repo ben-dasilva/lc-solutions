@@ -9,12 +9,9 @@ public class Solution_1022 {
 
         int len = 0;
 
-        for(int i = 0; i < 1_000_000; i++)
-        {
-            if(max % K == 0)
-            {
-                return i + 1;
-            }
+        for (int i = 0; i < 1_000_000; i++) {
+            if (max % K == 0) return i + 1;
+
             long old1 = max;
             max = max * 10 + 1;
             long old2 = max;
