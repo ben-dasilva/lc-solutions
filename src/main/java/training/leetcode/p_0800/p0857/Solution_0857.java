@@ -7,100 +7,72 @@ import java.util.*;
  */
 public class Solution_0857 {
     public double mincostToHireWorkers(int[] quality, int[] wage, int K) {
-        long start = System.currentTimeMillis();
+        int N = quality.length;
+        double ans = 1e9;
 
+        for (int captain = 0; captain < N; ++captain) {
+            // Must pay at least wage[captain] / quality[captain] per qual
+            double factor = (double) wage[captain] / quality[captain];
+            double prices[] = new double[N];
+            int t = 0;
+            for (int worker = 0; worker < N; ++worker) {
+                double price = factor * quality[worker];
+                if (price < wage[worker]) continue;
+                prices[t++] = price;
+            }
+
+            if (t < K) continue;
+            Arrays.sort(prices, 0, t);
+            double cand = 0;
+            for (int i = 0; i < K; ++i)
+                cand += prices[i];
+            ans = Math.min(ans, cand);
+        }
+
+        return ans;
+    }
+
+    public double mincostToHireWorkers1(int[] quality, int[] wage, int K) {
         TreeMap<Double, List<Integer>> groups = buildSortedValueGroups(quality, wage);
 
         double[] value = groups.keySet().stream().mapToDouble(e -> e).sorted().toArray();
 
-        // groups.forEach((k, v) -> System.out.printf("[%4.2f]: %s\n", k, v));
         int[][] g = new int[value.length][];
 
         int wc = 0;
-
-        long end2 = System.currentTimeMillis();
-        System.out.println("BUILT GROUPS: " + (end2 - start) + ", length: " + groups.size());
-
-        start = end2;
 
         for (List<Integer> w : groups.values()) {
             g[wc++] = w.stream().mapToInt(e -> e).toArray();
         }
 
-        end2 = System.currentTimeMillis();
-        System.out.println("BUILT G ARRAY: " + (end2 - start));
-
-        start = end2;
-
         double theMin = Double.MAX_VALUE;
 
-        boolean[] mayUse = new boolean[wage.length];
+        for (int i = 0; i < groups.size(); i++) {
+            PriorityQueue<Worker> pq = buildPriorityQueue(g, wage, quality, value, i);
 
-        for (int i = groups.size() - 1; i >= 0; i--) {
-            for (int j = groups.size() - 1; j >= i; j--) {
-                double thisMin = calculateMinCost(g, wage, quality, value, j, K, theMin, mayUse);
+            if (pq.size() < K) continue;
 
-                if (thisMin == -1) continue;
+            double thisMin = calculateMinCost(pq, value[i], K, theMin, i);
 
-                if (thisMin < theMin) { theMin = thisMin; }
-            }
+            if (thisMin == -1) continue;
 
-            long end = System.currentTimeMillis();
-            System.out.printf("[%d..%d]: %4.2f (%d)\n", i, groups.size(), theMin == Double.MAX_VALUE ? -1 : theMin, end - start);
-            start = end;
+            if (thisMin < theMin) { theMin = thisMin; }
         }
 
-        System.out.println("mayUse = " + Arrays.toString(mayUse));
         return theMin == Double.MAX_VALUE ? -1 : theMin;
     }
 
-    private double calculateMinCost(int[][] g, int[] wage, int[] quality, double[] value, int base, int k, double theMin, boolean[] mayUse) {
-        int[] pointers = new int[g.length];
-
+    private double calculateMinCost(PriorityQueue<Worker> pq, double v, int k, double theMin, int base) {
         double total = 0;
 
-        while (k > 0) {
-            double nextMin = Double.MAX_VALUE;
-            int index = -1;
+        String path = "";
 
-            for (int i = base; i < g.length; i++) {
-                int p = pointers[i];
-
-                if (p >= g[i].length) continue;
-
-                double v = value[base];
-
-                int nextPos = g[i][p];
-
-                double candidate;
-                if (i == base) {
-                    // all elements may be used
-                    candidate = wage[nextPos];
-                } else {
-                    // only previously known elements can be used
-                    if (!mayUse[nextPos]) continue;
-
-                    candidate = Math.max(quality[nextPos] / v, wage[nextPos]);
-                }
-
-                if (candidate < nextMin) {
-                    nextMin = candidate;
-                    index = i;
-                    mayUse[nextPos] = true;
-                }
-            }
-
-            if (index == -1) {
-                System.out.printf("We don't have enough workers (%d..%d)\n", base, g.length);
-                return -1;
-            }
-
-            total += nextMin;
-            pointers[index]++;
-            k--;
+        for (int i = 0; i < k; i++) {
+            Worker w = pq.poll();
+            total += w.fv;
+            path += "(" + w + ") ";
 
             if (total >= theMin) {
-                System.out.printf("Total %4.2f exceeded the min %4.2f\n", total, theMin);
                 return -1;
             }
         }
@@ -108,17 +80,47 @@ public class Solution_0857 {
         return total;
     }
 
+    private PriorityQueue<Worker> buildPriorityQueue(int[][] g, int[] wage, int[] quality, double[] value, int base) {
+        double v = value[base];
+
+        PriorityQueue<Worker> workers = new PriorityQueue<>(Comparator.comparingDouble(a -> a.fv));
+
+        for (int i = base; i >= 0; i--) {
+            for (int worker : g[i]) {
+                Worker e = new Worker(wage[worker], quality[worker], v);
+                workers.add(e);
+            }
+        }
+
+        return workers;
+    }
+
+    private class Worker {
+        int wage;
+        int quality;
+        double fv;
+        double v;
+
+        public Worker(int wage, int quality, double v) {
+            this.wage = wage;
+            this.quality = quality;
+            this.fv = Math.max((double) wage, quality * v);
+            this.v = v;
+        }
+
+        @Override
+        public String toString() {
+            return String.format("{%d/%d, v: %.2f, fw:%.2f}", wage, quality, v, fv);
+        }
+    }
+
     private TreeMap<Double, List<Integer>> buildSortedValueGroups(int[] quality, int[] wage) {
         TreeMap<Double, List<Integer>> map = new TreeMap<>();
 
         for (int i = 0; i < wage.length; i++) {
-            double value = quality[i] / (double) wage[i];
+            double value = (double) wage[i] / (double) quality[i];
             map.putIfAbsent(value, new ArrayList<>());
             map.get(value).add(i);
-        }
-
-        for (List<Integer> value : map.values()) {
-            value.sort(Comparator.comparingInt(v -> v));
         }
 
         return map;

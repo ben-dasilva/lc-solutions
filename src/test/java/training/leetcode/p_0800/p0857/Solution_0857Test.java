@@ -18,6 +18,13 @@ public class Solution_0857Test {
     private Solution_0857 s = new Solution_0857();
 
     @Test
+    public void ensure_it_works_when_input_is_1_1_1() {
+        double result = s.mincostToHireWorkers(new int[]{1, 1, 2}, new int[]{1, 1, 1}, 2);
+
+        assertThat(result, is(2.0));
+    }
+
+    @Test
     public void ensure_it_works_when_input_is_70_50_30() {
         double result = s.mincostToHireWorkers(new int[]{10, 20, 5}, new int[]{70, 50, 30}, 2);
 
@@ -66,6 +73,51 @@ public class Solution_0857Test {
         double result = s.mincostToHireWorkers(quality, wage, workers);
 
         assertThat(result, is(closeTo(1063.5625, 0.01)));
+    }
+
+    // Expect 113.10714
+    @Test
+    public void ensure_it_works_when_output_is_113() throws Exception {
+        URI uri = this.getClass().getResource("/p_0800/p0857/10.txt").toURI();
+
+        List<String> lines = Files.readAllLines(Paths.get(uri));
+        int[] quality = parseIntArray(lines.get(0));
+        int[] wage    = parseIntArray(lines.get(1));
+        int workers = parseInt(lines.get(2));
+
+        double result = s.mincostToHireWorkers(quality, wage, workers);
+
+        assertThat(result, is(closeTo(113.10714, 0.01)));
+    }
+
+    // Expect 113.10714
+    @Test
+    public void ensure_it_works_when_size_is_175() throws Exception {
+        URI uri = this.getClass().getResource("/p_0800/p0857/11.txt").toURI();
+
+        List<String> lines = Files.readAllLines(Paths.get(uri));
+        int[] quality = parseIntArray(lines.get(0));
+        int[] wage    = parseIntArray(lines.get(1));
+        int workers = parseInt(lines.get(2));
+
+        double result = s.mincostToHireWorkers(quality, wage, workers);
+
+        assertThat(result, is(closeTo(113.10714, 0.01)));
+    }
+    // Expect 113.10714
+
+    @Test
+    public void ensure_it_works_when_size_is_7285() throws Exception {
+        URI uri = this.getClass().getResource("/p_0800/p0857/12.txt").toURI();
+
+        List<String> lines = Files.readAllLines(Paths.get(uri));
+        int[] quality = parseIntArray(lines.get(0));
+        int[] wage    = parseIntArray(lines.get(1));
+        int workers = parseInt(lines.get(2));
+
+        double result = s.mincostToHireWorkers(quality, wage, workers);
+
+        assertThat(result, is(closeTo(113.10714, 0.01)));
     }
 
     private int[] parseIntArray(String s) {
