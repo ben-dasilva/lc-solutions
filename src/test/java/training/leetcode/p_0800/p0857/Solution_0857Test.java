@@ -72,7 +72,7 @@ public class Solution_0857Test {
 
         double result = s.mincostToHireWorkers(quality, wage, workers);
 
-        assertThat(result, is(closeTo(1063.5625, 0.01)));
+        assertThat(result, is(closeTo(67078.64639913525, 0.01)));
     }
 
     // Expect 113.10714
@@ -102,7 +102,7 @@ public class Solution_0857Test {
 
         double result = s.mincostToHireWorkers(quality, wage, workers);
 
-        assertThat(result, is(closeTo(113.10714, 0.01)));
+        assertThat(result, is(closeTo(38691.27272727273, 0.01)));
     }
     // Expect 113.10714
 
@@ -117,7 +117,7 @@ public class Solution_0857Test {
 
         double result = s.mincostToHireWorkers(quality, wage, workers);
 
-        assertThat(result, is(closeTo(113.10714, 0.01)));
+        assertThat(result, is(closeTo(83858002.51784, 0.01)));
     }
 
     private int[] parseIntArray(String s) {

@@ -6,123 +6,70 @@ import java.util.*;
  * <h3> LC-0857: Minimum Cost to Hire K Workers </h3>
  */
 public class Solution_0857 {
+    private double[][] costOf(int[] quality, int[] wage) {
+        double[][] cost = new double[quality.length][2];
+
+        for (int i = 0; i < quality.length; i++) {
+            cost[i][0] = wage[i]/(double)quality[i];
+            cost[i][1] = i;
+        }
+
+        // lowest cost (wage/quality) first
+        Arrays.sort(cost, Comparator.comparingDouble(a -> a[0]));
+
+        return cost;
+    }
+
     public double mincostToHireWorkers(int[] quality, int[] wage, int K) {
-        int N = quality.length;
-        double ans = 1e9;
+        // 1. first ordering, sort by VALUE, DESCENDING
+        // 2. second ordering, sort by QUALITY, ASCENDING
 
-        for (int captain = 0; captain < N; ++captain) {
-            // Must pay at least wage[captain] / quality[captain] per qual
-            double factor = (double) wage[captain] / quality[captain];
-            double prices[] = new double[N];
-            int t = 0;
-            for (int worker = 0; worker < N; ++worker) {
-                double price = factor * quality[worker];
-                if (price < wage[worker]) continue;
-                prices[t++] = price;
-            }
+        if (K > quality.length) return -1;
 
-            if (t < K) continue;
-            Arrays.sort(prices, 0, t);
-            double cand = 0;
-            for (int i = 0; i < K; ++i)
-                cand += prices[i];
-            ans = Math.min(ans, cand);
+        double[][] cost = costOf(quality, wage);
+
+        PriorityQueue<Integer> candidates = buildCandidates(quality, K, cost);
+
+        int sum = getSum(candidates);
+
+        double lowest = sum * cost[K - 1][0];
+
+        int lastQ = -candidates.peek();
+
+        for (int i = K; i < quality.length; i++) {
+            int thisQ = quality[(int) cost[i][1]];
+
+            if (thisQ >= lastQ) continue;
+
+            candidates.remove();
+            candidates.add(-thisQ);
+            sum -= lastQ - thisQ;
+            lastQ = -candidates.peek();
+            double thisTotal = sum * cost[i][0];
+
+            if (thisTotal < lowest) lowest = thisTotal;
         }
 
-        return ans;
+        return lowest;
     }
 
-    public double mincostToHireWorkers1(int[] quality, int[] wage, int K) {
-        TreeMap<Double, List<Integer>> groups = buildSortedValueGroups(quality, wage);
+    private int getSum(PriorityQueue<Integer> candidates) {
+        int sum = 0;
 
-        double[] value = groups.keySet().stream().mapToDouble(e -> e).sorted().toArray();
-
-        int[][] g = new int[value.length][];
-
-        int wc = 0;
-
-        for (List<Integer> w : groups.values()) {
-            g[wc++] = w.stream().mapToInt(e -> e).toArray();
+        for (int c : candidates) {
+            sum += -c;
         }
 
-        double theMin = Double.MAX_VALUE;
-
-        for (int i = 0; i < groups.size(); i++) {
-            PriorityQueue<Worker> pq = buildPriorityQueue(g, wage, quality, value, i);
-
-            if (pq.size() < K) continue;
-
-            double thisMin = calculateMinCost(pq, value[i], K, theMin, i);
-
-            if (thisMin == -1) continue;
-
-            if (thisMin < theMin) { theMin = thisMin; }
-        }
-
-        return theMin == Double.MAX_VALUE ? -1 : theMin;
+        return sum;
     }
 
-    private double calculateMinCost(PriorityQueue<Worker> pq, double v, int k, double theMin, int base) {
-        double total = 0;
+    private PriorityQueue<Integer> buildCandidates(int[] quality, int K, double[][] cost) {
+        PriorityQueue<Integer> candidates = new PriorityQueue<>();
 
-        String path = "";
-
-        for (int i = 0; i < k; i++) {
-            Worker w = pq.poll();
-            total += w.fv;
-            path += "(" + w + ") ";
-
-            if (total >= theMin) {
-                return -1;
-            }
+        for (int i = 0; i < K; i++) {
+            candidates.add(-quality[(int) cost[i][1]]);
         }
 
-        return total;
-    }
-
-    private PriorityQueue<Worker> buildPriorityQueue(int[][] g, int[] wage, int[] quality, double[] value, int base) {
-        double v = value[base];
-
-        PriorityQueue<Worker> workers = new PriorityQueue<>(Comparator.comparingDouble(a -> a.fv));
-
-        for (int i = base; i >= 0; i--) {
-            for (int worker : g[i]) {
-                Worker e = new Worker(wage[worker], quality[worker], v);
-                workers.add(e);
-            }
-        }
-
-        return workers;
-    }
-
-    private class Worker {
-        int wage;
-        int quality;
-        double fv;
-        double v;
-
-        public Worker(int wage, int quality, double v) {
-            this.wage = wage;
-            this.quality = quality;
-            this.fv = Math.max((double) wage, quality * v);
-            this.v = v;
-        }
-
-        @Override
-        public String toString() {
-            return String.format("{%d/%d, v: %.2f, fw:%.2f}", wage, quality, v, fv);
-        }
-    }
-
-    private TreeMap<Double, List<Integer>> buildSortedValueGroups(int[] quality, int[] wage) {
-        TreeMap<Double, List<Integer>> map = new TreeMap<>();
-
-        for (int i = 0; i < wage.length; i++) {
-            double value = (double) wage[i] / (double) quality[i];
-            map.putIfAbsent(value, new ArrayList<>());
-            map.get(value).add(i);
-        }
-
-        return map;
+        return candidates;
     }
 }
