@@ -34,12 +34,10 @@ class TreeNode:
         result = []
 
         def print_node(node: TreeNode, level=0):
-            if node is None:
+            if node is None or node.val is None:
                 result.append(f'{"  " * level}None')
                 return
-            if node.val is None:
-                result.append(f'{"  " * level}None')
-                return
+
             result.append(f'{"  " * level}{node.val}')
             print_node(node.left, level + 1)
             print_node(node.right, level + 1)

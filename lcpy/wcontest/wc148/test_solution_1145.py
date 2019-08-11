@@ -33,7 +33,7 @@ class TestSolution(TestCase):
         s = Solution()
         a = [3, null, 6, null, 7, 4, null, 1, 2, null, null, 5]
         root = TreeNode.load(a)
-        # print(root)
-        # print(root.graphviz())
+        print(root)
+        print(root.graphviz())
         v = s.btreeGameWinningMove(root, 7, 4)
         self.assertEqual(False, v)
