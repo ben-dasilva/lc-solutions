@@ -32,7 +32,6 @@ test_cases = (
     (6, [0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 1]),
 )
 
-# 0 0 0 0 0 0 1 0 1 0 0 0 1
 # unit tests
 for pair in test_cases:
     expected, args = pair

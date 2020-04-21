@@ -31,6 +31,28 @@ class TreeNode:
 
         return root
 
+    @staticmethod
+    def unload(tree: 'TreeNode'):
+        q = deque([tree])
+        ret = []
+        last = 0
+        while q:
+            t = q.popleft()
+            if t:
+                ret.append(t.val)
+                if t.val:
+                    last = len(ret)
+
+                q.append(t.left)
+                q.append(t.right)
+            else:
+                ret.append(None)
+
+        return ret[:last]
+
+    def node_str(self):
+        return f'({self.left.val if self.left else "__"}, {self.val}, {self.right.val if self.right else "__"})'
+
     def __repr__(self):
         result = []
 
@@ -56,8 +78,8 @@ class TreeNode:
             # if node is None: return
             if node is None:
                 rand = random.randrange(1e9)
-                result.append(f'{parent.val}->{rand} [color=none];')
-                result.append(f'{rand} [label="",color=none];')
+                result.append(f'{parent.val}->{rand} [color=lightgrey];')
+                result.append(f'{rand} [label="",color=lightgrey];')
                 return
 
             if parent is not None:
@@ -73,7 +95,7 @@ class TreeNode:
         return "\n    ".join(result)
 
 
-null = None
-t = TreeNode.load([3, null, 6, null, 7, 4, null, 1, 2, null, null, 5])
+#null = None
+#t = TreeNode.load([3, null, 6, null, 7, 4, null, 1, 2, null, null, 5])
 
-print(t.graphviz())
+#print(t.graphviz())
