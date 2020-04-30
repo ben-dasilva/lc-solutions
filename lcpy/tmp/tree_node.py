@@ -50,10 +50,10 @@ class TreeNode:
 
         return ret[:last]
 
-    def node_str(self):
+    def __repr__(self):
         return f'({self.left.val if self.left else "__"}, {self.val}, {self.right.val if self.right else "__"})'
 
-    def __repr__(self):
+    def node_str(self):
         result = []
 
         def print_node(node: TreeNode, level=0):
