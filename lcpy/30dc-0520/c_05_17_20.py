@@ -17,7 +17,7 @@ class Solution:
         ret = []
 
         for i, c in enumerate(s):
-            first_pos = i - size + 1
+            first_pos = i - size + chars
             #print(f'[{i:2}]:({chars:2}) "{c}" -> "{s[max(0, first_pos):i + 1]}"')
 
             if c not in counts:
